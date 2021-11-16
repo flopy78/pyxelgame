@@ -1,0 +1,67 @@
+from tkinter import*
+from pygame import mixer
+from pygame.mixer import music
+sprites=[]
+class UnitError(Exception):
+    def __init__(self,unit):
+        self.message=unit
+    def show_error(self):
+        return self.message
+class Screen:
+    def __init__(self,width=0,height=0,bg='white'):
+        self.fenetre=Tk()
+        self.canvas=Canvas(self.fenetre,width=width,height=height,bg=bg)
+        self.canvas.pack()
+    def slice(self,x,y):
+        for i in range(x):
+            for j in range(y):
+                self.canvas.create_rectangle(i*(self.canvas.winfo_width()/x),j*(self.canvas.winfo_width()/x),\
+                    (i+1)*(self.canvas.winfo_width()/x),(j+1)*(self.canvas.winfo_width()/x))
+    def loop(self):
+            self.fenetre.mainloop()
+    def wait(self,time):
+        self.fenetre.after(time)
+    def callback(self,function):
+        function()
+    def update(self):
+        self.fenetre.update()
+    def event(self,event,function):
+        self.canvas.bind_all(event,function)
+    def add_image(self,image=P,x=0,y=0):
+        print("all is ok")
+        sprites.append(Image(image=image,x=x,y=y,canvas=self.canvas))
+        return sprites[-1]
+    def add_text(self,x=0,y=0,text='',fill='black',font='Arial',size=20,style='normal'):
+        sprites.append(Text(x=x,y=y,text=text,fill=fill,font=font,size=size,style=style,canvas=self.canvas))
+        return sprites[-1]
+class TextImage:
+    def coords(self,x=0,y=0):
+        self.pos=[x,y]
+        self.canvas.coords(self.image,self.pos[0],self.pos[1])
+    def move(self,xmove=0,ymove=0):
+        self.canvas.move(self.image,xmove,ymove)
+    def delete(self):
+        self.canvas.delete(self.image)
+class Image(TextImage):
+    def __init__(self,image=None,x=0,y=0,canvas=None):
+        self.canvas=canvas
+        self.image=canvas.create_image(x,y,image=image)
+        self.pos=[x,y]
+    def dimensions(self):
+        return (self.image.winfo_with(),self.image.winfo_height())
+class Text(TextImage):
+    def __init__(self,x=0,y=0,text='',fill='black',font='Arial',size=20,style='normal',canvas=None):
+        self.canvas=canvas
+        self.image=canvas.create_text(x,y,text=text,fill=fill,font=(font,size,style))
+        self.pos=[x,y]
+def load_image(file=""):
+    return PhotoImage(file=file)
+class Music:
+    def __init__(self,path=""):
+        mixer.init()
+        music.load(path)
+    def play(self,loop=0,start=0):
+        music.play(loop,start)
+    def stop(self):
+        music.stop()
+        
